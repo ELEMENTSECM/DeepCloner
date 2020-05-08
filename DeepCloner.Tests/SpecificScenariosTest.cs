@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 #if !NETSTANDARD
 using System.Data.Entity;
+using System.Runtime.InteropServices;
 #else
 using Microsoft.EntityFrameworkCore;
 #endif
@@ -15,8 +16,9 @@ namespace Force.DeepCloner.Tests
 {
 #if !NETSTANDARD
 	[TestFixture(false)]
-#endif
+#else
 	[TestFixture(true)]
+#endif
 	public class SpecificScenariosTest : BaseTest
 	{
 		public SpecificScenariosTest(bool isSafeInit)
@@ -152,9 +154,11 @@ namespace Force.DeepCloner.Tests
 
 		public class AdventureContext : DbContext
 		{
+			private const string ConnectionString = @"Server=.;Integrated Security=SSPI;Database=AdventureWorks";
+
 			public AdventureContext()
 #if !NETSTANDARD
-			: base("Server=.;Integrated Security=SSPI;Database=AdventureWorks")
+			: base(ConnectionString)
 #endif
 			{
 			}
@@ -164,7 +168,7 @@ namespace Force.DeepCloner.Tests
 #if NETSTANDARD
 			protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 			{
-				optionsBuilder.UseSqlServer(@"Server=.;Database=AdventureWorks;User Id=elements_test; password=k6Sjw3v2bj; Trusted_Connection=true;MultipleActiveResultSets=true");
+				optionsBuilder.UseSqlServer(ConnectionString);
 			}
 #endif
 		}
